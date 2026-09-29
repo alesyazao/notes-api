@@ -1,144 +1,207 @@
 # 📝 Notes API
 
-REST API сервис для управления заметками с тегами, построен на Flask и SQLAlchemy. Поддерживает полный CRUD, поиск, фильтрацию по тегам, пагинацию и развёртывание через Docker.
+REST API сервис для управления заметками с тегами, построенный на Flask и SQLAlchemy. Поддерживает полный CRUD, поиск, фильтрацию по тегам, пагинацию и быстрое развёртывание через Docker.
 
-**🌐 Демо:** https://notes-api-6pa2.onrender.com/api/
-
----
-
-## Стек технологий
-
-- **Python 3.11** + **Flask 3.0**
-- **SQLAlchemy** ORM + **SQLite** (разработка) / **PostgreSQL** (продакшн)
-- **pytest** для тестирования
-- **Docker** + **docker-compose** для контейнеризации
-- Развёрнуто на **[Render](https://render.com)**
+**🌐 Демо-версия:** [https://notes-api-6pa2.onrender.com/api/](https://notes-api-6pa2.onrender.com/api/)
 
 ---
 
-## Структура проекта
+## 🚀 Стек технологий
+
+* **Python 3.11** + **Flask 3.0**
+* **SQLAlchemy ORM** + **SQLite** (для разработки) / **PostgreSQL** (для продакшна)
+* **pytest** + **pytest-cov** для unit-тестирования и проверки покрытия
+* **Docker** + **docker-compose** для контейнеризации
+* Хостинг и развёртывание на платформе **[Render](https://render.com)**
+
+---
+
+## 📂 Структура проекта
+
+```text
 notes-api/
 ├── app/
-│ ├── init.py # фабрика приложения
-│ ├── database.py # экземпляр SQLAlchemy
-│ ├── models.py # модели Note, Tag
-│ └── routes.py # все эндпоинты API
+│   ├── __init__.py      # Фабрика приложения (Application Factory)
+│   ├── database.py      # Инициализация экземпляра SQLAlchemy
+│   ├── models.py        # Данные и ORM-модели (Note, Tag)
+│   └── routes.py        # Обработчики эндпоинтов API
 ├── tests/
-│ ├── conftest.py # фикстуры pytest
-│ └── test_api.py # unit-тесты (21 тест)
+│   ├── conftest.py      # Фикстуры и конфигурация pytest
+│   └── test_api.py      # Набор unit-тестов (21 тест)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
-└── run.py # точка входа приложения
+└── run.py               # Точка входа для запуска приложения
+```
 
 ---
 
-## Локальная установка
+## 💻 Локальная установка и запуск
 
-### 1. Клонируй репозиторий и создай виртуальное окружение
+### Классический запуск в виртуальном окружении
 
-git clone https://github.com/alesyazao/notes-api.git
-cd notes-api
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+1. **Клонируйте репозиторий и перейдите в папку проекта:**
+   ```bash
+   git clone https://github.com/alesyazao/notes-api.git
+   cd notes-api
+   ```
 
-2. Установи зависимости
-pip install -r requirements.txt
+2. **Создайте и активируйте виртуальное окружение:**
+   ```bash
+   python -m venv .venv
+   # Для Linux / macOS:
+   source .venv/bin/activate
+   # Для Windows (Command Prompt):
+   .venv\Scripts\activate.bat
+   # Для Windows (PowerShell):
+   .venv\Scripts\Activate.ps1
+   ```
 
-2. Установи зависимости
-pip install -r requirements.txt
-3. Настрой переменные окружения
+3. **Установите все необходимые зависимости:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-cp .env.example .env
-# Отредактируй .env — минимум установи SECRET_KEY
-4. Запусти сервер разработки
+4. **Настройте переменные окружения:**
+   ```bash
+   cp .env.example .env
+   ```
+   *Откройте файл `.env` и укажите как минимум ваш секретный ключ (`SECRET_KEY`).*
 
-python run.py
-API будет доступен по адресу http://localhost:5000.
+5. **Запустите сервер для разработки:**
+   ```bash
+   python run.py
+   ```
+   *Приложение станет доступно по адресу:* `http://localhost:5000/api`
 
-Запуск через Docker
+---
 
-# Собрать и запустить web + postgres
+### Запуск с помощью Docker
+
+Если у вас установлен Docker, вы можете собрать и запустить проект (веб-сервер вместе с базой данных PostgreSQL) одной командой:
+
+```bash
+# Собрать образы и запустить контейнеры в интерактивном режиме
 docker-compose up --build
 
-# Запустить в фоновом режиме
+# Запустить контейнеры в фоновом режиме (detached)
 docker-compose up -d --build
 
-# Остановить
+# Остановить работу контейнеров и удалить их
 docker-compose down
-Запуск тестов
+```
 
-# Запустить все тесты
+---
+
+## 🧪 Запуск тестов
+
+Для проверки работоспособности кода используются unit-тесты:
+
+```bash
+# Запустить стандартный прогон всех тестов
 pytest
 
-# С отчётом о покрытии
-pytest --cov=app --cov-report=term-missing
-
-# С подробным выводом
+# Запустить тесты с выводом подробной информации
 pytest -v
-Справочник API
-Базовый URL (локально): http://localhost:5000/api
-Базовый URL (продакшн): https://notes-api-6pa2.onrender.com/api
 
-Эндпоинты
-Метод	URL	Описание
-GET	/	Информация о сервисе
-GET	/health	Проверка здоровья сервиса
-GET	/notes	Получить список заметок (поиск, фильтр, пагинация)
-GET	/notes/<id>	Получить одну заметку
-POST	/notes	Создать новую заметку
-PUT	/notes/<id>	Обновить заметку
-DELETE	/notes/<id>	Удалить заметку
-GET	/tags	Получить список всех тегов
-Параметры запроса для GET /notes
-Параметр	Тип	По умолчанию	Описание
-q	string	—	Поиск в заголовке и содержимом
-tag	string	—	Фильтр по имени тега
-sort	string	created_at	Поле сортировки: created_at, updated_at, title
-order	string	desc	asc или desc
-page	integer	1	Номер страницы
-per_page	integer	10	Элементов на странице (максимум 100)
-Примеры curl-запросов
-Проверка здоровья
+# Запустить тесты и сформировать отчёт о покрытии кода (coverage)
+pytest --cov=app --cov-report=term-missing
+```
 
+---
+
+## 📖 Справочник API
+
+* **Базовый URL (локально):** `http://localhost:5000/api`
+* **Базовый URL (продакшн):** `https://notes-api-6pa2.onrender.com/api`
+
+### Основные эндпоинты
+
+| Метод | URL | Описание |
+| :--- | :--- | :--- |
+| **GET** | `/` | Общая информация о сервисе и его версии |
+| **GET** | `/health` | Проверка здоровья сервиса (Health Check) |
+| **GET** | `/notes` | Получить список заметок (с поддержкой поиска, фильтров и пагинации) |
+| **GET** | `/notes/<id>` | Получить подробную информацию об одной заметке |
+| **POST** | `/notes` | Создать новую заметку |
+| **PUT** | `/notes/<id>` | Полностью или частично обновить существующую заметку |
+| **DELETE** | `/notes/<id>` | Удалить заметку из базы данных |
+| **GET** | `/tags` | Получить список всех существующих тегов |
+
+### Параметры фильтрации и пагинации для `GET /notes`
+
+* `q` (string) — Поисковый запрос для поиска подстроки в заголовках (`title`) и тексте (`content`) заметок.
+* `tag` (string) — Фильтрация заметок по точному имени тега.
+* `sort` (string) — Поле для сортировки. Доступные варианты: `created_at` (по умолчанию), `updated_at`, `title`.
+* `order` (string) — Направление сортировки: `desc` (по убыванию, по умолчанию) или `asc` (по возрастанию).
+* `page` (integer) — Номер запрашиваемой страницы (по умолчанию `1`).
+* `per_page` (integer) — Количество заметок на одной странице (по умолчанию `10`, максимум `100`).
+
+---
+
+## 📡 Примеры cURL запросов
+
+**Проверить статус сервиса:**
+```bash
 curl http://localhost:5000/api/health
-Получить все заметки
+```
 
+**Получить список всех заметок:**
+```bash
 curl http://localhost:5000/api/notes
-Получить заметки с пагинацией
+```
 
+**Запрос с пагинацией (страница 1, 5 элементов):**
+```bash
 curl "http://localhost:5000/api/notes?page=1&per_page=5"
-Поиск заметок
+```
 
+**Поиск по ключевому слову с сортировкой по алфавиту:**
+```bash
 curl "http://localhost:5000/api/notes?q=flask&sort=title&order=asc"
-Фильтр заметок по тегу
+```
 
+**Фильтрация заметок по конкретному тегу:**
+```bash
 curl "http://localhost:5000/api/notes?tag=python"
-Получить одну заметку
+```
 
+**Получить заметку по ID:**
+```bash
 curl http://localhost:5000/api/notes/1
-Создать заметку
+```
 
+**Создать новую заметку:**
+```bash
 curl -X POST http://localhost:5000/api/notes \
   -H "Content-Type: application/json" \
   -d '{"title": "Моя первая заметка", "content": "Привет, Notes API!", "tags": ["python", "flask"]}'
-Обновить заметку
+```
 
+**Обновить существующую заметку:**
+```bash
 curl -X PUT http://localhost:5000/api/notes/1 \
   -H "Content-Type: application/json" \
   -d '{"title": "Обновлённый заголовок", "tags": ["обновлено"]}'
-Удалить заметку
+```
 
+**Удалить заметку по ID:**
+```bash
 curl -X DELETE http://localhost:5000/api/notes/1
-Получить список всех тегов
+```
 
+**Получить список всех уникальных тегов:**
+```bash
 curl http://localhost:5000/api/tags
-Пример ответа
-GET /api/notes
+```
 
-json
+---
+
+## 📄 Пример структуры JSON-ответа (`GET /api/notes`)
+
+```json
 {
   "notes": [
     {
@@ -158,5 +221,5 @@ json
   "per_page": 10,
   "pages": 1
 }
-
+```
 
