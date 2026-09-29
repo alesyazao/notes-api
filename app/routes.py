@@ -122,3 +122,16 @@ def list_tags():
 @notes_bp.get("/health")
 def health():
     return jsonify({"status": "ok"})
+
+# ── index ─────────────────────────────────────────────────────────────────────
+@notes_bp.get("/")
+def index():
+    return jsonify({
+        "service": "Notes API",
+        "version": "1.0",
+        "endpoints": [
+            "/api/health",
+            "/api/notes",
+            "/api/tags",
+        ],
+    })
